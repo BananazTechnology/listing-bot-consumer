@@ -1,10 +1,10 @@
-[![SOFT](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/SOFT.yml/badge.svg?branch=develop)](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/SOFT.yml) [![RELEASE](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/RELEASE.yml/badge.svg)](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/RELEASE.yml)
+[![SOFT](https://github.com/BananazTechnology/listing-bot-consumer/actions/workflows/SOFT.yml/badge.svg?branch=develop)](https://github.com/BananazTechnology/listing-bot-consumer/actions/workflows/SOFT.yml) [![RELEASE](https://github.com/BananazTechnology/listing-bot-consumer/actions/workflows/RELEASE.yml/badge.svg)](https://github.com/BananazTechnology/listing-bot-consumer/actions/workflows/RELEASE.yml)
 
-# Listing Bot Producer
+# Listing Bot Consumer
 * Description: A @spring-projects framework project which loads items into @mysql
 * Version: (Check main for release or develop for dev)
 * Creator: Aaron Renner
-* THIS REPO IS A LISTING EVENT PRODUCER
+* THIS REPO IS A LISTING EVENT CONSUMER
 
 ### Table of Contents
 * [Introduction](#introduction)
@@ -15,9 +15,9 @@
   
 ## Introduction
 
-This Java application is built on the Spring-Boot framework! This producer bot utilizes external APIs like those from @ProjectOpenSea and @LooksRare to obtain market event information and creates generic event objects in a MySQL database. Unlike our original listing bot [discord-nft-listing-bot](https://github.com/Aman7123/discord-nft-listing-bot) which was configured on a per-instance basis with individual tokens, this revised setup requires only configuration to the organization DB which contains all configurations and are load balanced to these producer bots. This bot includes a small internal API for obtaining the state configuration of each contract.
+This Java application is built on the Spring-Boot framework! This consumer bot utilizes our [Listing Producer](https://github.com/BananazTechnology/listing-bot-producer) and listens for new events in our MySQL database then processes them based on the `contract_id` column value by matching them to the config in memory from [Market Config API](https://github.com/BananazTechnology/market-bot-config-api-sb). Unlike our original listing bot [discord-nft-listing-bot](https://github.com/Aman7123/discord-nft-listing-bot) which was configured on a per-instance basis with individual tokens, this revised setup requires only configuration to the organization DB which contains all configurations and are load balanced to these consumer bots. This bot includes a small internal API for obtaining the state configuration of each contract.
 
-THIS REPO IS A LISTING EVENT PRODUCER
+THIS REPO IS A LISTING EVENT CONSUMER
 
 ## Setup
 ### Properties
@@ -41,6 +41,11 @@ spring:
     url: jdbc:mysql://host:port/DB-Name?createDatabaseIfNotExist=true
     username: username
     password: password
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
 ```
 
 ### Running the Project
@@ -83,12 +88,15 @@ CMD [ "java", \
 ## Libraries
 
 ### Jump To
-* [Required Dependencies](#spring-boot-required)
-* [Lombok](#lombok)
-* [JSON-Smart](#json-smart)
+* [Required Dependencies](#required)
+* [Included Dependencies](#included)
+  * [JSON Smart](#json-smart)
+  * [Javacord](#javacord)
+  * [Twittered](#twittered)
+  * [MySQL & JPA](#mysql-and-jpa)
 
-### Spring-Boot Required
-<details><summary>Lombok</summary>
+### Required
+You are required to install this into IDE
 * [Lombok - Automated Class Method Generation](https://projectlombok.org/features/all)
 ```pom
 <dependency>
@@ -97,13 +105,50 @@ CMD [ "java", \
     <optional>true</optional>
 </dependency>
 ```
-</details>
+
+### Included
 <details><summary>JSON-Smart</summary>
 * [JSON Parser JAVADOC](https://javadoc.io/doc/net.minidev/json-smart/latest/index.html)
 ```pom
 <dependency>
     <groupId>net.minidev</groupId>
     <artifactId>json-smart</artifactId>
+</dependency>
+```
+</details>
+<details><summary>Javacord</summary>
+* [Javacord](https://github.com/Javacord/Javacord)
+```pom
+<dependency>
+    <groupId>org.javacord</groupId>
+    <artifactId>javacord</artifactId>
+    <version>3.3.2</version>
+    <type>pom</type>
+</dependency>
+```
+</details>
+<details><summary>Twittered</summary>
+* [Twittered](https://github.com/redouane59/twittered)
+```pom
+<dependency>
+    <groupId>com.github.redouane59.twitter</groupId>
+    <artifactId>twittered</artifactId>
+    <version>1.26</version>
+</dependency>
+```
+</details>
+<details><summary>MySQL and JPA</summary>
+* [MySQL](https://mvnrepository.com/artifact/mysql/mysql-connector-java)
+* [JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+```pom
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
 </dependency>
 ```
 </details>

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-consumer</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>listing-bot-consumer</name>
 	<description>A @spring-projects framework project which reads items from @mysql</description>
 	<properties>
@@ -39,13 +39,6 @@
 			<artifactId>json-smart</artifactId>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/org.web3j/utils -->
-		<dependency>
-		    <groupId>org.web3j</groupId>
-		    <artifactId>core</artifactId>
-		    <version>5.0.0</version>
-		</dependency>
-		
 		<!-- Properties setters -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -63,13 +56,6 @@
 		    <groupId>com.github.redouane59.twitter</groupId>
 		    <artifactId>twittered</artifactId>
 		    <version>1.26</version>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.11.0</version>
 		</dependency>
 		
 		<!-- SQL -->
