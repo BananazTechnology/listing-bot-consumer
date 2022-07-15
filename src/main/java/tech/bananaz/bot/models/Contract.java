@@ -19,6 +19,7 @@ import tech.bananaz.bot.utils.RarityEngine;
 public class Contract {
 	
 	@Exclude
+	@JsonIgnore
 	private ListingsScheduler newRequest;
 	
 	@Exclude
