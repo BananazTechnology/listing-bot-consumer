@@ -39,7 +39,7 @@ public class RunetimeScheduler {
 	
 	@PostConstruct
 	public void init() throws RuntimeException, InterruptedException {
-		LOGGER.info("--- Main App Statup ---");
+		LOGGER.debug("--- Main App Statup ---");
 		List<ListingConfig> listingStartupItems = config.findAll();
 		for(ListingConfig confItem : listingStartupItems) {
 			// Build required components for each entry
@@ -50,7 +50,7 @@ public class RunetimeScheduler {
 			// Add this to internal memory buffer
 			this.contracts.addContract(watcher);
 		}
-		LOGGER.info("--- Init the UpdateScheduler ---");
+		LOGGER.debug("--- Init the UpdateScheduler ---");
 		this.uScheduler.start();
 	}
 }
