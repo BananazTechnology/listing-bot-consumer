@@ -53,7 +53,7 @@ public class DiscordBot {
 			// Build rarity value
 			String finalRarity = 
 				(nonNull(event.getRarity())) ? 
-					String.format("**Rank** [%s](%s) on %s \n", event.getRarity(), event.getRarityRedirect(), event.getEngine().getDisplayName()) : 
+					String.format("**Rank** [%s](%s) on %s \n", event.getRarity(), event.getRarityUrl(), event.getRarityEngine().getDisplayName()) : 
 					"";
 			// Build title
 			String title = String.format("%s Listed! (%s)", event.getName(), event.getMarket().getSlug());

@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Data;
 import lombok.ToString;
+import tech.bananaz.bot.utils.EventType;
 import tech.bananaz.bot.utils.MarketPlace;
 import tech.bananaz.bot.utils.RarityEngine;
 import tech.bananaz.bot.utils.Ticker;
@@ -18,7 +19,7 @@ import tech.bananaz.bot.utils.Ticker;
 @ToString(includeFieldNames=true)
 @Data
 @Entity
-@Table(name = "listing_event")
+@Table(name = "event")
 public class ListingEvent {
 	
 	@Transient
@@ -33,7 +34,7 @@ public class ListingEvent {
 	private Instant      startTime;
 	private Instant      endTime;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String     tokenId;
+	private String       tokenId;
 	@Column(columnDefinition = "VARCHAR(75)")
 	private String       collectionName;
 	private String       collectionImageUrl;
@@ -53,9 +54,9 @@ public class ListingEvent {
 	private String       rarity;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
-	private RarityEngine engine;
+	private RarityEngine rarityEngine;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String       rarityRedirect;
+	private String       rarityUrl;
 	@Column(columnDefinition = "VARCHAR(25)")
 	private BigDecimal   priceInCrypto;
 	@Column(columnDefinition = "VARCHAR(25)")
@@ -63,6 +64,9 @@ public class ListingEvent {
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(6)")
 	private Ticker       cryptoType;
+	@Enumerated( EnumType.STRING )
+	@Column(columnDefinition = "VARCHAR(7)")
+	private EventType    eventType;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
 	private MarketPlace  market;

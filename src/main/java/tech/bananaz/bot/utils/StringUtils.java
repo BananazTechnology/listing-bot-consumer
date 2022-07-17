@@ -2,16 +2,13 @@ package tech.bananaz.bot.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import static java.util.Objects.nonNull;
-
 import java.math.BigDecimal;
 
 public class StringUtils {
 	
-	private static final DecimalFormat dFormat  = new DecimalFormat("####,###,###.00");
 	private static final int MAXHASHTAGS = 4;
 
 	/**
@@ -98,9 +95,9 @@ public class StringUtils {
 	}
 	
 	public String pricelineFormat(BigDecimal priceInCrypto, Ticker cryptoPaymentType, BigDecimal priceInUsd) {
-		String cryptoValue = (nonNull(priceInCrypto)) ? String.format("%3f", priceInCrypto) : "NULL";
+		String cryptoValue = (nonNull(priceInCrypto)) ? priceInCrypto.toPlainString() : "NULL";
 		String paymentType = (nonNull(cryptoPaymentType)) ? cryptoPaymentType.getSymbol() : "";
-		String usdValue    = (nonNull(priceInUsd)) ? String.format("($%s)", dFormat.format(priceInUsd.doubleValue())) : "";
+		String usdValue    = (nonNull(priceInUsd)) ? String.format("($%,.2f)", priceInUsd.doubleValue()) : "";
 		return String.format("%s%s %s", cryptoValue, paymentType, usdValue);
 	}
 }

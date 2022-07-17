@@ -8,6 +8,7 @@ import lombok.Getter;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ListingEvent;
 import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.bot.utils.EventType;
 
 import static java.util.Objects.nonNull;
 
@@ -66,8 +67,7 @@ public class ListingsScheduler extends TimerTask {
 		ListingEventRepository repo = this.contract.getEvents();
 		// Get any new items
 		List<ListingEvent> queryEvents = 
-			repo.findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(this.contract.getId(), this.lastChecked);
-			//repo.findByContractIdAndConsumedFalseOrderByCreatedDateAsc(this.contract.getId());
+			repo.findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanAndEventTypeOrderByCreatedDateAsc(this.contract.getId(), this.lastChecked, EventType.LISTING);
 		// Process if events exist
 		if(queryEvents.size() > 0) {
 			// Loop through available items

@@ -56,8 +56,6 @@ public class Contract {
 	
 	// For the DB and API
 	private String uuid				  = UUID.randomUUID().toString();
-	@SuppressWarnings("unused")
-	private Instant lastChecked;
 	
 
 	public void startListingsScheduler() {

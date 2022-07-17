@@ -8,14 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tech.bananaz.bot.models.ListingEvent;
+import tech.bananaz.bot.utils.EventType;
 
 @Repository
 public interface ListingEventRepository extends JpaRepository<ListingEvent, Long> {
 	
 	ListingEvent	   findById(long id);
 	boolean 		   existsByIdAndConsumedFalse(long id);
-	List<ListingEvent> findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(long configId, Instant instantAsUTC);
-	List<ListingEvent> findByConfigIdAndConsumedFalseOrderByCreatedDateAsc(long configId );
+	List<ListingEvent> findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanAndEventTypeOrderByCreatedDateAsc(
+							long configId, 
+							Instant instantAsUTC, 
+							EventType eventType);
 	
 	@Transactional
 	@Modifying
