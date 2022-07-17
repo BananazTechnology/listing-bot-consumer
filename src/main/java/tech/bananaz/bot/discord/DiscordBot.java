@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.DiscordProperties;
 import tech.bananaz.bot.models.ListingEvent;
+import tech.bananaz.bot.utils.StringUtils;
+
 import static java.util.Objects.nonNull;
 import static java.util.Objects.isNull;
 import java.awt.Color;
@@ -24,7 +26,8 @@ public class DiscordBot {
 	/** Custom */
 	private static final String CREATORNAME    = "@BananazTech";
 	private static final String FOOTERIMAGEICO = "https://raw.githubusercontent.com/BananazTechnology/bananaz-assets/main/assets/navLogo.png";
-	private static final Logger LOGGER  = LoggerFactory.getLogger(DiscordBot.class);
+	private static final Logger LOGGER  	   = LoggerFactory.getLogger(DiscordBot.class);
+	private StringUtils sUtils 				   = new StringUtils();
 	
 	public DiscordBot(DiscordProperties config) {
 		if(nonNull(config.getDiscordToken()) && nonNull(config.getChannelId())) {
@@ -53,7 +56,7 @@ public class DiscordBot {
 					String.format("**Rank** [%s](%s) on %s \n", event.getRarity(), event.getRarityRedirect(), event.getEngine().getDisplayName()) : 
 					"";
 			// Build title
-			String title = String.format("%s Listed! (%s)", event.getDisplayNameOutput(), event.getMarket().getSlug());
+			String title = String.format("%s Listed! (%s)", event.getName(), event.getMarket().getSlug());
 			// Build embed
 			EmbedBuilder newMsg = new EmbedBuilder()
 				.setColor(this.color)
@@ -62,7 +65,7 @@ public class DiscordBot {
 				.setDescription(
 						finalRarity + 
 					   ((event.getQuantity() > 1) ? "**Bundle** " + event.getQuantity() + "x \n" : "") +
-					   "**Amount** " + event.getListingAmoutOutput() + "\n" +
+					   "**Amount** " + sUtils.pricelineFormat(event.getPriceInCrypto(), event.getCryptoType(), event.getPriceInUsd()) + "\n" +
 					   "**Seller** " + String.format("[`%s`](%s) \n", event.getSellerName(), event.getSellerUrl()) +
 					   "**Link**   " + String.format("[Click Here](%s)", event.getPermalink())
 				   )

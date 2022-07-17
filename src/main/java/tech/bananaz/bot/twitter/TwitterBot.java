@@ -8,6 +8,7 @@ import com.github.redouane59.twitter.signature.*;
 
 import tech.bananaz.bot.models.ListingEvent;
 import tech.bananaz.bot.models.TwitterProperties;
+import tech.bananaz.bot.utils.StringUtils;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.isNull;
@@ -17,9 +18,10 @@ public class TwitterBot {
 	private TwitterClient bot = null;
 	private String apiKey;
 	private String apiSecret;
-	private static final Logger LOGGER 	 = LoggerFactory.getLogger(TwitterBot.class);
-	private final static String NEWLINE = "\n";
+	private final static String NEWLINE 	= "\n";
 	private final static String BRAIL_BLANK = "⠀";
+	private static final Logger LOGGER 	 	= LoggerFactory.getLogger(TwitterBot.class);
+	private StringUtils sUtils 			 	= new StringUtils();
 
 	public TwitterBot(TwitterProperties config) {
 		if(nonNull(config.getApiKey()) && nonNull(config.getApiSecretKey()) && nonNull(config.getAccessToken())) {
@@ -44,9 +46,9 @@ public class TwitterBot {
 		if(this.bot != null) {
 			String finalRarity = (event.getRarity() != null) ? String.format("rank %s on rarity tools %s", event.getRarity(), NEWLINE) : "";
 			bot.postTweet(
-				event.getDisplayNameOutput() + NEWLINE +
+				event.getName() + NEWLINE +
 				finalRarity +
-				"Listed for " + event.getListingAmoutOutput() + NEWLINE +
+				"Listed for " + sUtils.pricelineFormat(event.getPriceInCrypto(), event.getCryptoType(), event.getPriceInUsd()) + NEWLINE +
 				event.getPermalink() + BRAIL_BLANK + NEWLINE)
 			;
 		}

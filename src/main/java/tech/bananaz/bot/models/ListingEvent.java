@@ -2,7 +2,6 @@ package tech.bananaz.bot.models;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,52 +26,48 @@ public class ListingEvent {
 	
 	// Required for entity
 	@Id
-	private long       id;
+	private long         id;
 	@Column(columnDefinition = "VARCHAR(75)")
-	private String     name;
-	private Instant    createdDate;
-	private Instant    startTime;
-	private Instant    endTime;
+	private String       name;
+	private Instant      createdDate;
+	private Instant      startTime;
+	private Instant      endTime;
 	@Column(columnDefinition = "VARCHAR(50)")
 	private String     tokenId;
 	@Column(columnDefinition = "VARCHAR(75)")
-	private String     collectionName;
-	private String     collectionImageUrl;
+	private String       collectionName;
+	private String       collectionImageUrl;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String     slug;
-	private String     imageUrl;
+	private String       slug;
+	private String       imageUrl;
 	@Column(columnDefinition = "VARCHAR(127)")
-	private String     permalink;
-	private int	       quantity;
+	private String       permalink;
+	private int	         quantity;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String     sellerWalletAddy;
+	private String       sellerWalletAddy;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String     sellerName;
+	private String       sellerName;
 	@Column(columnDefinition = "VARCHAR(127)")
-	private String     sellerUrl;
-	@Column(columnDefinition = "VARCHAR(50)")
-	private String     displayNameOutput;
+	private String       sellerUrl;
 	@Column(columnDefinition = "VARCHAR(6)")
-	private String     rarity;
-	@Column(columnDefinition = "VARCHAR(50)")
-	private String     rarityRedirect;
-	@Column(columnDefinition = "VARCHAR(25)")
-	private BigDecimal listingPriceInCrypto;
-	@Column(columnDefinition = "VARCHAR(25)")
-	private BigDecimal listingPriceInUsd;
-	@Column(columnDefinition = "VARCHAR(75)")
-	private String     listingAmoutOutput;
-	@Enumerated( EnumType.STRING )
-	@Column(columnDefinition = "VARCHAR(6)")
-	private Ticker     cryptoPaymentType;
+	private String       rarity;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
 	private RarityEngine engine;
+	@Column(columnDefinition = "VARCHAR(50)")
+	private String       rarityRedirect;
+	@Column(columnDefinition = "VARCHAR(25)")
+	private BigDecimal   priceInCrypto;
+	@Column(columnDefinition = "VARCHAR(25)")
+	private BigDecimal   priceInUsd;
+	@Enumerated( EnumType.STRING )
+	@Column(columnDefinition = "VARCHAR(6)")
+	private Ticker       cryptoType;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
 	private MarketPlace  market;
 	// These last few items are for the consumer
-	private long         contractId;
+	private long         configId;
 	@Column(columnDefinition = "VARCHAR(50)")
 	private String       consumedBy;
 	@Column(nullable = false, columnDefinition="TINYINT(1) UNSIGNED DEFAULT 0")
@@ -82,9 +77,5 @@ public class ListingEvent {
 	
 	public ListingEvent(Contract contract) {
 		this.contract = contract;
-	}
-	
-	public String getHash() {
-		return String.format("%s:%s", this.sellerWalletAddy, this.listingPriceInCrypto.toString());
 	}
 }

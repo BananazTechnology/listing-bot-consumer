@@ -2,7 +2,6 @@ package tech.bananaz.bot.models;
 
 import java.time.Instant;
 import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
@@ -12,7 +11,6 @@ import tech.bananaz.bot.repositories.ListingConfigRepository;
 import tech.bananaz.bot.repositories.ListingEventRepository;
 import tech.bananaz.bot.services.ListingsScheduler;
 import tech.bananaz.bot.twitter.TwitterBot;
-import tech.bananaz.bot.utils.RarityEngine;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -38,10 +36,6 @@ public class Contract {
 
 	// OpenSea settings
 	boolean excludeOpensea 			  = false;
-	// Support for slug based API requests in OpenSea
-	private boolean isSlug 			  = false;
-	// Is Solana on OpenSea
-	private boolean isSolana 		  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
 
@@ -50,12 +44,6 @@ public class Contract {
 	@JsonIgnore
 	private DiscordBot bot;
 	boolean excludeDiscord = false;
-	// If enabled, will auto pull from LooksRare for all
-	private boolean autoRarity 		  = false;
-	// Proves the URLs for formatting Discord
-	private RarityEngine engine;
-	// For when the slug in URL is not the same as Contract slug
-	private String raritySlug;
 
 	// Twitter Settings
 	@Exclude

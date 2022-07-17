@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import tech.bananaz.bot.discord.DiscordBot;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ContractCollection;
@@ -16,11 +15,8 @@ import tech.bananaz.bot.models.TwitterProperties;
 import tech.bananaz.bot.repositories.ListingConfigRepository;
 import tech.bananaz.bot.repositories.ListingEventRepository;
 import tech.bananaz.bot.twitter.TwitterBot;
-import tech.bananaz.bot.utils.RarityEngine;
-
 import static java.util.Objects.nonNull;
 import static tech.bananaz.bot.utils.StringUtils.nonEquals;
-
 import java.awt.Color;
 
 @Component
@@ -80,25 +76,8 @@ public class UpdateScheduler extends TimerTask {
 							updatedItems.add(String.format("interval: %s->%s", cont.getInterval(), conf.getInterval()));
 							cont.setInterval(conf.getInterval());
 						}
-						// Rarity Slug
-						if(nonEquals(cont.getRaritySlug(), conf.getRaritySlugOverwrite())) {
-							updatedItems.add(String.format("raritySlug: %s->%s", cont.getRaritySlug(), conf.getRaritySlugOverwrite()));
-							cont.setRaritySlug(conf.getRaritySlugOverwrite());
-						}
-						// Rarity Engine
-						RarityEngine rarityEngine = (conf.getRarityEngine() != null) ? RarityEngine.fromString(conf.getRarityEngine()): RarityEngine.RARITY_TOOLS;
-						if(nonEquals(cont.getEngine().toString(), rarityEngine)) {
-							updatedItems.add(String.format("raritySlug: %s->%s", cont.getEngine().toString(), conf.getAutoRarity()));
-							cont.setEngine(rarityEngine);
-						}
-						
 
 						// Booleans
-						// Auto Rarity
-						if(nonEquals(cont.isAutoRarity(), conf.getAutoRarity())) {
-							updatedItems.add(String.format("autoRarity: %s->%s", cont.isAutoRarity(), conf.getAutoRarity()));
-							cont.setAutoRarity(conf.getAutoRarity());
-						}
 						// Show Bundles
 						if(nonEquals(cont.isShowBundles(), conf.getShowBundles())) {
 							updatedItems.add(String.format("showBundles: %s->%s", cont.isShowBundles(), conf.getShowBundles()));

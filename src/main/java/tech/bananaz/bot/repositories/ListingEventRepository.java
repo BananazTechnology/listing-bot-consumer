@@ -14,8 +14,8 @@ public interface ListingEventRepository extends JpaRepository<ListingEvent, Long
 	
 	ListingEvent	   findById(long id);
 	boolean 		   existsByIdAndConsumedFalse(long id);
-	List<ListingEvent> findByContractIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(long contractId, Instant instantAsUTC);
-	List<ListingEvent> findByContractIdAndConsumedFalseOrderByCreatedDateAsc(long contractId);
+	List<ListingEvent> findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(long configId, Instant instantAsUTC);
+	List<ListingEvent> findByConfigIdAndConsumedFalseOrderByCreatedDateAsc(long configId );
 	
 	@Transactional
 	@Modifying

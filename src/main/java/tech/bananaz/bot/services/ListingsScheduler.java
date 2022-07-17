@@ -66,7 +66,7 @@ public class ListingsScheduler extends TimerTask {
 		ListingEventRepository repo = this.contract.getEvents();
 		// Get any new items
 		List<ListingEvent> queryEvents = 
-			repo.findByContractIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(this.contract.getId(), this.lastChecked);
+			repo.findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanOrderByCreatedDateAsc(this.contract.getId(), this.lastChecked);
 			//repo.findByContractIdAndConsumedFalseOrderByCreatedDateAsc(this.contract.getId());
 		// Process if events exist
 		if(queryEvents.size() > 0) {
@@ -80,7 +80,7 @@ public class ListingsScheduler extends TimerTask {
 					// Ensure the item is consumed and the owner is this contract instance
 					if(refreshedEvent.isConsumed() && refreshedEvent.getConsumedBy().equalsIgnoreCase(this.contract.getUuid())) {
 						// Log
-						logInfoNewListing(e);
+						logInfoNewEvent(e);
 						// Discord
 						if(!this.contract.isExcludeDiscord()) this.contract.getBot().sendListing(this.contract, e);
 						// Twitter
@@ -94,7 +94,7 @@ public class ListingsScheduler extends TimerTask {
 		this.lastChecked = offset(newTime);
 	}
 	
-	private void logInfoNewListing(ListingEvent event) {
+	private void logInfoNewEvent(ListingEvent event) {
 		LOGGER.info("{}, {}", event.toString(),this.contract.toString());
 	}
 	

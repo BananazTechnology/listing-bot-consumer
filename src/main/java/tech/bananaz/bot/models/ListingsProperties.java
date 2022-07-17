@@ -7,8 +7,6 @@ import tech.bananaz.bot.discord.DiscordBot;
 import tech.bananaz.bot.repositories.ListingConfigRepository;
 import tech.bananaz.bot.repositories.ListingEventRepository;
 import tech.bananaz.bot.twitter.TwitterBot;
-import tech.bananaz.bot.utils.RarityEngine;
-import static java.util.Objects.nonNull;
 
 @Component
 public class ListingsProperties {
@@ -18,9 +16,6 @@ public class ListingsProperties {
 	public Contract configProperties(ListingConfig config, DiscordBot bot, TwitterBot twitBot, ListingConfigRepository configs, ListingEventRepository events) throws RuntimeException, InterruptedException {
 		Contract output = null;
 		try {
-			// Grab rarityEngine
-			RarityEngine rarityEngine = (nonNull(config.getRarityEngine())) ? RarityEngine.fromString(config.getRarityEngine()): RarityEngine.RARITY_TOOLS;
-			
 			// If no server or outputChannel then throw exception
 			output = new Contract();
 			output.setConfigs(configs);
@@ -34,12 +29,7 @@ public class ListingsProperties {
 			output.setExcludeLooks(config.getExcludeLooksrare());
 			output.setExcludeDiscord(config.getExcludeDiscord());
 			output.setExcludeTwitter(config.getExcludeTwitter());
-			output.setAutoRarity(config.getAutoRarity());
-			output.setEngine(rarityEngine);
-			output.setRaritySlug(config.getRaritySlugOverwrite());
-			output.setSlug(config.getContractIsSlug());
 			output.setShowBundles(config.getShowBundles());
-			output.setSolana(config.getSolanaOnOpensea());
 			
 		} catch (Exception e) {
 			LOGGER.error("Check properties {}, Exception: {}", config.toString(), e.getMessage());
