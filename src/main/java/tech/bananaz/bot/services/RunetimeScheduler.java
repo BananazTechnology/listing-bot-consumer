@@ -1,33 +1,29 @@
 package tech.bananaz.bot.services;
 
-import java.util.*;
-
 import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import tech.bananaz.bot.discord.DiscordBot;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ContractCollection;
-import tech.bananaz.bot.models.DiscordProperties;
-import tech.bananaz.bot.models.ListingConfig;
-import tech.bananaz.bot.models.ListingsProperties;
-import tech.bananaz.bot.models.TwitterProperties;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.twitter.TwitterBot;
+import tech.bananaz.bot.utils.ContractBuilder;
+import tech.bananaz.models.DiscordConfig;
+import tech.bananaz.models.Listing;
+import tech.bananaz.models.TwitterConfig;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.utils.DiscordUtils;
+import tech.bananaz.utils.TwitterUtils;
 
 @Component
 public class RunetimeScheduler {
 	
 	@Autowired
-	private ListingConfigRepository config;
+	private ListingConfigPagingRepository config;
 	
 	@Autowired
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 	
 	@Autowired
 	private UpdateScheduler uScheduler;
@@ -40,15 +36,19 @@ public class RunetimeScheduler {
 	@PostConstruct
 	public void init() throws RuntimeException, InterruptedException {
 		LOGGER.debug("--- Main App Statup ---");
-		List<ListingConfig> listingStartupItems = config.findAll();
-		for(ListingConfig confItem : listingStartupItems) {
-			// Build required components for each entry
-			TwitterBot twitBot = new TwitterProperties().configProperties(confItem);
-			DiscordBot bot = new DiscordProperties().configProperties(confItem);
-			Contract watcher = new ListingsProperties().configProperties(confItem, bot, twitBot, this.config, this.events);
-			watcher.startListingsScheduler();
-			// Add this to internal memory buffer
-			this.contracts.addContract(watcher);
+		Iterable<Listing> listingStartupItems = config.findAll();
+		for(Listing confItem : listingStartupItems) {
+			try {
+				// Build required components for each entry
+				TwitterUtils twitBot = new TwitterConfig().configProperties(confItem);
+				DiscordUtils bot = new DiscordConfig().configProperties(confItem);
+				Contract watcher = new ContractBuilder().configProperties(confItem, bot, twitBot, this.config, this.events);
+				watcher.startListingsScheduler();
+				// Add this to internal memory buffer
+				this.contracts.addContract(watcher);
+			} catch (Exception e) {
+				LOGGER.error("Failed to start config {}", confItem);
+			}
 		}
 		LOGGER.debug("--- Init the UpdateScheduler ---");
 		this.uScheduler.start();

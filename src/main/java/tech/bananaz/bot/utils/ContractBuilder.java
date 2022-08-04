@@ -1,24 +1,32 @@
-package tech.bananaz.bot.models;
+package tech.bananaz.bot.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import tech.bananaz.bot.discord.DiscordBot;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.twitter.TwitterBot;
+import tech.bananaz.utils.DiscordUtils;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.bot.models.Contract;
+import tech.bananaz.models.Listing;
+import tech.bananaz.utils.TwitterUtils;
 
 @Component
-public class ListingsProperties {
+public class ContractBuilder {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ListingsProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContractBuilder.class);
 
-	public Contract configProperties(ListingConfig config, DiscordBot bot, TwitterBot twitBot, ListingConfigRepository configs, ListingEventRepository events) throws RuntimeException, InterruptedException {
+	public Contract configProperties(
+									Listing config,
+									DiscordUtils bot,
+									TwitterUtils twitBot, 
+									ListingConfigPagingRepository configs, 
+									EventPagingRepository events) throws RuntimeException, InterruptedException {
 		Contract output = null;
 		try {
 			// If no server or outputChannel then throw exception
 			output = new Contract();
 			output.setConfigs(configs);
+			output.setConfig(config);
 			output.setEvents(events);
 			output.setId(config.getId());
 			output.setContractAddress(config.getContractAddress());

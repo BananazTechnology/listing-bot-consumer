@@ -5,31 +5,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.bananaz.bot.discord.DiscordBot;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ContractCollection;
-import tech.bananaz.bot.models.DiscordProperties;
-import tech.bananaz.bot.models.ListingConfig;
-import tech.bananaz.bot.models.ListingsProperties;
-import tech.bananaz.bot.models.TwitterProperties;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.twitter.TwitterBot;
+import tech.bananaz.bot.utils.ContractBuilder;
+import tech.bananaz.models.DiscordConfig;
+import tech.bananaz.models.Listing;
+import tech.bananaz.models.TwitterConfig;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.utils.DiscordUtils;
+import tech.bananaz.utils.TwitterUtils;
+
 import static java.util.Objects.nonNull;
-import static tech.bananaz.bot.utils.StringUtils.nonEquals;
 import java.awt.Color;
+import static tech.bananaz.utils.StringUtils.nonEquals;
 
 @Component
 public class UpdateScheduler extends TimerTask {
 	
 	@Autowired
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Autowired
 	private ContractCollection contracts;
 	
 	@Autowired
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 	
 	/** Important variables needed for Runtime */
 	private final int REFRESH_REQ = 60000;
@@ -58,8 +59,8 @@ public class UpdateScheduler extends TimerTask {
 	@Override
 	public void run() {
 		if(nonNull(this.contracts) && active) {
-			List<ListingConfig> allListingConfigs = this.configs.findAll();
-			for(ListingConfig conf : allListingConfigs) {
+			Iterable<Listing> allListingConfigs = this.configs.findAll();
+			for(Listing conf : allListingConfigs) {
 				try {
 					List<String> updatedItems = new ArrayList<>();
 					Contract cont = this.contracts.getContractById(conf.getId());
@@ -113,7 +114,7 @@ public class UpdateScheduler extends TimerTask {
 						if(nonNull(cont.getBot())) {
 							if(!cont.getBot().isTokenEqual(conf.getDiscordToken()) && nonNull(conf.getDiscordToken())) {
 								updatedItems.add(String.format("discordToken"));
-								cont.setBot(new DiscordProperties().configProperties(conf));
+								cont.setBot(new DiscordConfig().configProperties(conf));
 							}
 							// Only write these values when we know a Discord has been created
 							if(nonNull(cont.getBot().getBot())) {
@@ -134,7 +135,7 @@ public class UpdateScheduler extends TimerTask {
 						if(nonNull(cont.getTwitBot())) {
 							if(!cont.getTwitBot().apiKeyEquals(conf.getTwitterApiKey()) || !cont.getTwitBot().apiKeySecretEquals(conf.getTwitterApiKeySecret())) {
 								updatedItems.add(String.format("twitterBot"));
-								cont.setTwitBot(new TwitterProperties().configProperties(conf));
+								cont.setTwitBot(new TwitterConfig().configProperties(conf));
 							}
 						}
 
@@ -142,17 +143,24 @@ public class UpdateScheduler extends TimerTask {
 					// Add new contract
 					else {
 						LOGGER.debug("Object NOT found in memory, building new");
-						// Build required components for each entry
-						TwitterBot twitBot = new TwitterProperties().configProperties(conf);
-						DiscordBot bot = new DiscordProperties().configProperties(conf);
-						Contract watcher = new ListingsProperties().configProperties(conf, bot, twitBot, this.configs, this.events);
-						// Start the watcher
-						watcher.startListingsScheduler();
-						// Add this to internal memory buffer
-						this.contracts.addContract(watcher);
-						updatedItems.add(String.format("new: %s", watcher));
+						try {
+							// Build required components for each entry
+							TwitterUtils twitBot = new TwitterConfig().configProperties(conf);
+							DiscordUtils bot = new DiscordConfig().configProperties(conf);
+							Contract watcher = new ContractBuilder().configProperties(conf, bot, twitBot, this.configs, this.events);
+							// Start the watcher
+							watcher.startListingsScheduler();
+							// Add this to internal memory buffer
+							this.contracts.addContract(watcher);
+							updatedItems.add(String.format("new: %s", watcher));
+						} catch (Exception e) {
+							LOGGER.error("Failed to start config {}", conf);
+						}
 					}
-					if(updatedItems.size() > 0) LOGGER.debug("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
+					if(updatedItems.size() > 0) {
+						if(nonNull(cont)) cont.setConfig(conf);
+						LOGGER.debug("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
+					}
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}

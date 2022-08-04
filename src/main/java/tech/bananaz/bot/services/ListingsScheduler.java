@@ -6,28 +6,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import tech.bananaz.bot.models.Contract;
-import tech.bananaz.bot.models.ListingEvent;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.utils.EventType;
-
+import tech.bananaz.enums.EventType;
+import tech.bananaz.models.Event;
 import static java.util.Objects.nonNull;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import tech.bananaz.repositories.EventPagingRepository;
 
 public class ListingsScheduler extends TimerTask {
 	
 	private Contract contract;
-	private boolean active						   = false;
+	private EventPagingRepository repo;
 	@Getter
-	private Instant lastChecked     			   = offset(Instant.now());
-	private final static int DEFAULT_OFFSET_MINUTE = 5;
+	private boolean active						   = false;
 	private Timer timer 		 				   = new Timer(); // creating timer
     private TimerTask task; // creating timer task
 	private static final Logger LOGGER 			   = LoggerFactory.getLogger(ListingsScheduler.class);
 
 	public ListingsScheduler(Contract contract) {
 		this.contract = contract;
+		this.repo     = contract.getEvents();
 	}
 	
 	@Override
@@ -37,7 +33,7 @@ public class ListingsScheduler extends TimerTask {
 				watchListings();
 			} catch (Exception e) {
 				e.printStackTrace();
-				LOGGER.error(String.format("Failed during get listing: %s, stack: %s", this.contract.getContractAddress(), Arrays.toString(e.getStackTrace()))); 
+				LOGGER.error(String.format("Failed during get events: %s, stack: %s", this.contract.getContractAddress(), Arrays.toString(e.getStackTrace()))); 
 			}
 		}
 	}
@@ -63,44 +59,33 @@ public class ListingsScheduler extends TimerTask {
 	}
 	
 	private void watchListings() throws Exception {
-		Instant newTime = Instant.now();
-		ListingEventRepository repo = this.contract.getEvents();
 		// Get any new items
-		List<ListingEvent> queryEvents = 
-			repo.findByConfigIdAndConsumedFalseAndCreatedDateGreaterThanAndEventTypeOrderByCreatedDateAsc(this.contract.getId(), this.lastChecked, EventType.LISTING);
+		List<Event> queryEvents = 
+			repo.findByConfigIdAndConsumedFalseAndEventTypeOrderByCreatedDateAsc(this.contract.getId(), EventType.LISTING);
 		// Process if events exist
 		if(queryEvents.size() > 0) {
 			// Loop through available items
-			for(ListingEvent e : queryEvents) {
+			for(Event e : queryEvents) {
 				// Ensure a single transaction of GET and SET which should ensure no overwrite
 				int updateCount = repo.updateByIdSetConsumedTrueAndConsumedBy(e.getId(), this.contract.getUuid());
 				// Ensure the item was updated
 				if(nonNull(updateCount) && updateCount > 0) {
-					ListingEvent refreshedEvent = repo.findById(e.getId());
+					Event refreshedEvent = repo.findById(e.getId());
 					// Ensure the item is consumed and the owner is this contract instance
 					if(refreshedEvent.isConsumed() && refreshedEvent.getConsumedBy().equalsIgnoreCase(this.contract.getUuid())) {
 						// Log
 						logInfoNewEvent(e);
 						// Discord
-						if(!this.contract.isExcludeDiscord()) this.contract.getBot().sendListing(this.contract, e);
+						if(!this.contract.isExcludeDiscord()) this.contract.getBot().sendEvent(e, this.contract.getConfig());
 						// Twitter
-						if(!this.contract.isExcludeTwitter()) this.contract.getTwitBot().sendListing(e);
+						if(!this.contract.isExcludeTwitter()) this.contract.getTwitBot().sendEvent(e);
 					}
 				}
 			}
 		}
-		
-		// Save time stamp for subsequent requests
-		this.lastChecked = offset(newTime);
 	}
 	
-	private void logInfoNewEvent(ListingEvent event) {
+	private void logInfoNewEvent(Event event) {
 		LOGGER.info("{}, {}", event.toString(),this.contract.toString());
-	}
-	
-	private Instant offset(Instant v) {
-		return v
-				.minus(DEFAULT_OFFSET_MINUTE, ChronoUnit.MINUTES)
-				.minus(v.getNano(), ChronoUnit.NANOS);
 	}
 }

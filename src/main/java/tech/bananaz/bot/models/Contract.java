@@ -1,16 +1,16 @@
 package tech.bananaz.bot.models;
 
-import java.time.Instant;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import lombok.ToString.Exclude;
-import tech.bananaz.bot.discord.DiscordBot;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.utils.DiscordUtils;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
 import tech.bananaz.bot.services.ListingsScheduler;
-import tech.bananaz.bot.twitter.TwitterBot;
+import tech.bananaz.models.Listing;
+import tech.bananaz.utils.TwitterUtils;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -22,11 +22,11 @@ public class Contract {
 	
 	@Exclude
 	@JsonIgnore
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Exclude
 	@JsonIgnore
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 
 	// Pairs from DB definition
 	private long id;
@@ -42,13 +42,13 @@ public class Contract {
 	// Discord Settings
 	@Exclude
 	@JsonIgnore
-	private DiscordBot bot;
+	private DiscordUtils bot;
 	boolean excludeDiscord = false;
 
 	// Twitter Settings
 	@Exclude
 	@JsonIgnore
-	private TwitterBot twitBot;
+	private TwitterUtils twitBot;
 	private boolean excludeTwitter 	  = false;
 	
 	// LooksRare settings
@@ -57,6 +57,8 @@ public class Contract {
 	// For the DB and API
 	private String uuid				  = UUID.randomUUID().toString();
 	
+	// To save on DB calls
+	Listing config;
 
 	public void startListingsScheduler() {
 		newRequest = new ListingsScheduler(this);
@@ -67,7 +69,7 @@ public class Contract {
 		newRequest.stop();
 	}
 	
-	public Instant getLastChecked() {
-		return this.newRequest.getLastChecked();
+	public boolean getIsSchedulerActive() {
+		return this.newRequest.isActive();
 	}
 }
