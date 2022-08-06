@@ -11,6 +11,7 @@ import tech.bananaz.repositories.ListingConfigPagingRepository;
 import tech.bananaz.bot.services.ListingsScheduler;
 import tech.bananaz.models.Listing;
 import tech.bananaz.utils.TwitterUtils;
+import static java.util.Objects.nonNull;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -71,5 +72,13 @@ public class Contract {
 	
 	public boolean getIsSchedulerActive() {
 		return this.newRequest.isActive();
+	}
+	
+	public String getDiscordInviteLink() {
+		String outputUrl = null;
+		if(nonNull(this.bot)) {
+			if(nonNull(this.bot.getBot())) outputUrl = this.bot.getBot().createBotInvite();
+		}
+		return outputUrl;
 	}
 }
