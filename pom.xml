@@ -11,7 +11,7 @@
 	
 	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-consumer</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<name>listing-bot-consumer</name>
 	<description>A @spring-projects framework project which reads items from @mysql</description>
 	
