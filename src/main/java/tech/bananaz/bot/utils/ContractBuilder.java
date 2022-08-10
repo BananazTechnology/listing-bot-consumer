@@ -33,8 +33,6 @@ public class ContractBuilder {
 			output.setInterval(config.getInterval());
 			output.setBot(bot);
 			output.setTwitBot(twitBot);
-			output.setExcludeOpensea(config.getExcludeOpensea());
-			output.setExcludeLooks(config.getExcludeLooksrare());
 			output.setExcludeDiscord(config.getExcludeDiscord());
 			output.setExcludeTwitter(config.getExcludeTwitter());
 			output.setShowBundles(config.getShowBundles());
