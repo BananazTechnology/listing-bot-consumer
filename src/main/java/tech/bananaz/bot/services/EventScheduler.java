@@ -11,7 +11,7 @@ import tech.bananaz.models.Event;
 import static java.util.Objects.nonNull;
 import tech.bananaz.repositories.EventPagingRepository;
 
-public class ListingsScheduler extends TimerTask {
+public class EventScheduler extends TimerTask {
 	
 	private Contract contract;
 	private EventPagingRepository repo;
@@ -19,9 +19,9 @@ public class ListingsScheduler extends TimerTask {
 	private boolean active						   = false;
 	private Timer timer 		 				   = new Timer(); // creating timer
     private TimerTask task; // creating timer task
-	private static final Logger LOGGER 			   = LoggerFactory.getLogger(ListingsScheduler.class);
+	private static final Logger LOGGER 			   = LoggerFactory.getLogger(EventScheduler.class);
 
-	public ListingsScheduler(Contract contract) {
+	public EventScheduler(Contract contract) {
 		this.contract = contract;
 		this.repo     = contract.getEvents();
 	}
@@ -45,7 +45,7 @@ public class ListingsScheduler extends TimerTask {
 		if(nonNull(this.contract)) {
 			this.active = true;
 			this.task   = this;
-			LOGGER.info(String.format("Starting new ListingsScheduler in %sms for: %s", startsIn, this.contract.toString()));
+			LOGGER.info(String.format("Starting new EventScheduler in %sms for: %s", startsIn, this.contract.toString()));
 			// Starts this new timer, starts at random time and runs per <interval> milliseconds
 			this.timer.schedule(task, startsIn , this.contract.getInterval());
 		}
@@ -76,9 +76,17 @@ public class ListingsScheduler extends TimerTask {
 						// Log
 						logInfoNewEvent(e);
 						// Discord
-						if(!this.contract.isExcludeDiscord()) this.contract.getBot().sendEvent(e, this.contract.getConfig());
+						try {
+							 if(!this.contract.isExcludeDiscord()) this.contract.getBot().sendEvent(e, this.contract.getConfig());
+						} catch (Exception ex) {
+							LOGGER.error("Error on Discord dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+						}
 						// Twitter
-						if(!this.contract.isExcludeTwitter()) this.contract.getTwitBot().sendEvent(e);
+						try {
+							if(!this.contract.isExcludeTwitter()) this.contract.getTwitBot().sendEvent(e);
+						} catch (Exception ex) {
+							LOGGER.error("Error on Twitter dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+						}
 					}
 				}
 			}

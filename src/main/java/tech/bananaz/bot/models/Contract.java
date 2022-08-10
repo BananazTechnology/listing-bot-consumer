@@ -8,7 +8,7 @@ import lombok.ToString.Exclude;
 import tech.bananaz.utils.DiscordUtils;
 import tech.bananaz.repositories.EventPagingRepository;
 import tech.bananaz.repositories.ListingConfigPagingRepository;
-import tech.bananaz.bot.services.ListingsScheduler;
+import tech.bananaz.bot.services.EventScheduler;
 import tech.bananaz.models.Listing;
 import tech.bananaz.utils.TwitterUtils;
 
@@ -18,7 +18,7 @@ public class Contract {
 	
 	@Exclude
 	@JsonIgnore
-	private ListingsScheduler newRequest;
+	private EventScheduler newRequest;
 	
 	@Exclude
 	@JsonIgnore
@@ -63,7 +63,7 @@ public class Contract {
 	Listing config;
 
 	public void startListingsScheduler() {
-		newRequest = new ListingsScheduler(this);
+		newRequest = new EventScheduler(this);
 		newRequest.start();
 	}
 	
