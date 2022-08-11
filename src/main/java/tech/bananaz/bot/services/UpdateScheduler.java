@@ -94,16 +94,6 @@ public class UpdateScheduler extends TimerTask {
 							updatedItems.add(String.format("showBundles: %s->%s", cont.isShowBundles(), decryptedConf.getShowBundles()));
 							cont.setShowBundles(decryptedConf.getShowBundles());
 						}
-						// Exclude OpenSea
-						if(nonEquals(cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea())) {
-							updatedItems.add(String.format("excludeOpensea: %s->%s", cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea()));
-							cont.setExcludeOpensea(decryptedConf.getExcludeOpensea());
-						}
-						// Exclude Looksrare
-						if(nonEquals(cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare())) {
-							updatedItems.add(String.format("excludeLooksrare: %s->%s", cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare()));
-							cont.setExcludeLooks(decryptedConf.getExcludeLooksrare());
-						}
 						// Exclude Discord
 						if(nonEquals(cont.isExcludeDiscord(), decryptedConf.getExcludeDiscord())) {
 							updatedItems.add(String.format("excludeDiscord: %s->%s", cont.isExcludeDiscord(), decryptedConf.getExcludeDiscord()));

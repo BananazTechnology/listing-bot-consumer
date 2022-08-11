@@ -35,7 +35,6 @@ public class Contract {
 	private boolean active 			  = true;
 
 	// OpenSea settings
-	boolean excludeOpensea 			  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
 
@@ -50,9 +49,6 @@ public class Contract {
 	@JsonIgnore
 	private TwitterUtils twitBot;
 	private boolean excludeTwitter 	  = false;
-	
-	// LooksRare settings
-	private boolean excludeLooks      = false;
 	
 	// For the DB and API
 	private String uuid				  = UUID.randomUUID().toString();
